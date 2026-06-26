@@ -1,4 +1,5 @@
 import os
+import sys
 import uuid
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
@@ -6,6 +7,13 @@ from werkzeug.utils import secure_filename
 from pypdf import PdfReader
 from docx import Document
 from dotenv import load_dotenv
+
+# Fix sys.path so local modules (gemini, speech, report) are always found
+# This is needed for Vercel serverless where cwd may not be the backend folder
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BACKEND_DIR)
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 # Import our custom modules
 import gemini
@@ -17,8 +25,8 @@ load_dotenv()
 
 app = Flask(
     __name__,
-    template_folder='../templates',
-    static_folder='../static'
+    template_folder=os.path.join(ROOT_DIR, 'templates'),
+    static_folder=os.path.join(ROOT_DIR, 'static')
 )
 CORS(app)
 
