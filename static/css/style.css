@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #050209;
+    color: #f8fafc;
+    overflow-x: hidden;
+}
+
+/* Custom background mesh */
+.bg-space {
+    background-image: 
+        radial-gradient(at 10% 10%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(30, 27, 75, 0.4) 0px, transparent 70%);
+}
+
+/* Glassmorphism styling */
+.glass-card {
+    background: rgba(15, 10, 25, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+    outline: none;
+}
+
+/* Glowing buttons */
+.btn-glow-purple {
+    background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glow-purple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+}
+
+.btn-outline-glow {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-glow:hover {
+    border-color: #ec4899;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+    background: rgba(236, 72, 153, 0.05);
+}
+
+/* Glowing text */
+.text-glow-purple {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.text-glow-pink {
+    text-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+}
+
+/* Mic pulse animation */
+@keyframes micPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(236, 72, 153, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
+    }
+}
+
+.mic-recording {
+    animation: micPulse 1.8s infinite;
+    background-color: #ec4899 !important;
+}
+
+/* Audio waveform bars animation */
+.wave-bar {
+    display: inline-block;
+    width: 3px;
+    height: 10px;
+    background-color: #a78bfa;
+    border-radius: 9999px;
+    margin: 0 1px;
+    transition: height 0.1s ease;
+}
+
+.mic-recording + .waveform-container .wave-bar {
+    animation: waveJump 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes waveJump {
+    0% { height: 6px; }
+    100% { height: 28px; }
+}
+
+.mic-recording + .waveform-container .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.mic-recording + .waveform-container .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.mic-recording + .waveform-container .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+.mic-recording + .waveform-container .wave-bar:nth-child(5) { animation-delay: 0.05s; }
+
+/* Custom Circular Score Progress */
+.circle-progress-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.circle-progress-svg {
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 8;
+}
+
+.circle-val {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-out;
+}
+
+/* Loading brain pulsing indicator */
+.pulse-glow {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+        filter: drop-shadow(0 0 25px rgba(139, 92, 246, 0.8));
+    }
+}
+
+/* Hide scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Customized glowing border line for card containers */
+.glow-border {
+    position: relative;
+}
+
+.glow-border::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.4) 0%, rgba(236, 72, 153, 0.4) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntPrep - AI Powered Interview Practice</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        },
+                        pink: {
+                            500: '#ec4899',
+                            600: '#db2777',
+                        },
+                        spaceDark: '#050209',
+                        panelDark: 'rgba(15, 10, 25, 0.45)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-space bg-spaceDark text-slate-100 min-h-screen relative no-scrollbar">
+
+    <!-- Glowing top decorative border -->
+    <div class="h-[2px] w-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600"></div>
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center relative z-50">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="resetToDashboard()">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <i class="fa-solid fa-brain text-white text-lg"></i>
+            </div>
+            <div>
+                <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-300 to-pink-400">IntPrep</span>
+                <p class="text-[9px] text-purple-400 font-semibold uppercase tracking-widest leading-none">AI Interviewer</p>
+            </div>
+        </div>
+        
+        <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-400">
+            <a href="#" class="hover:text-purple-400 transition" onclick="resetToDashboard()">Dashboard</a>
+            <a href="#" class="hover:text-purple-400 transition" onclick="openHowToUse()">How to Use</a>
+            <a href="#" class="hover:text-purple-400 transition" onclick="openKeySettings()">API Setup</a>
+            <a href="https://github.com" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-github text-lg"></i></a>
+        </nav>
+
+        <div class="flex items-center space-x-4">
+            <button onclick="openKeySettings()" class="text-slate-400 hover:text-white p-2 rounded-lg bg-white/5 border border-white/10 transition-all hover:border-purple-500/30" title="API Settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <button onclick="resetToDashboard()" class="hidden md:flex items-center space-x-2 text-xs py-2 px-4 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/25 transition">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Reset Session</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 relative z-10">
+        
+        <!-- 1. LANDING & UPLOAD SECTION -->
+        <section id="landing-section" class="space-y-12 py-6">
+            <!-- Hero Title -->
+            <div class="text-center space-y-4 max-w-3xl mx-auto">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/5 text-purple-300 text-xs font-medium tracking-wide">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                    </span>
+                    <span>Gemini-1.5-Flash Practice Suite</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-300 block mb-2">An Advanced AI.</span>
+                    <span class="text-white">Personalized Interviews.</span>
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+                    Upload any Job Description. Speak your responses. Get strict, professional scoring, deep gaps analysis, and real-time cross-questions just like a real interview panel.
+                </p>
+            </div>
+
+            <!-- Upload & Config Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+                
+                <!-- Left: JD Upload Dropzone -->
+                <div class="lg:col-span-7 space-y-4">
+                    <label class="block text-sm font-semibold tracking-wide text-slate-300">UPLOAD JOB DESCRIPTION (JD)</label>
+                    <div id="dropzone" class="glass-card glow-border rounded-2xl border-dashed border-2 border-white/10 p-8 text-center cursor-pointer hover:border-purple-500/30 hover:bg-purple-500/5 transition-all group relative">
+                        <input type="file" id="jd-file-input" class="hidden" accept=".pdf,.docx">
+                        
+                        <div class="space-y-4 py-4" id="upload-prompt">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-purple-400 group-hover:text-purple-300 group-hover:border-purple-500/20 transition-all">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="font-medium text-slate-200">Drag & Drop JD Document</p>
+                                <p class="text-xs text-slate-500">Supports PDF or DOCX (Max 16MB)</p>
+                            </div>
+                            <div class="inline-flex items-center space-x-2 text-xs text-purple-400 font-medium">
+                                <span>Or choose from computer</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Upload Success Info -->
+                        <div class="hidden space-y-4 py-4" id="upload-success">
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-file-circle-check text-2xl"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <p id="uploaded-filename" class="font-medium text-emerald-400 truncate max-w-[250px] mx-auto">file_uploaded.pdf</p>
+                                <p class="text-xs text-slate-400" id="uploaded-filesize">0 KB</p>
+                            </div>
+                            <button type="button" onclick="removeJdFile(event)" class="text-xs text-pink-400 hover:text-pink-300 font-medium underline">
+                                Remove and upload another
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Paste Text Option -->
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-white/5"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs uppercase">
+                            <span class="bg-spaceDark px-4 text-slate-500 font-medium tracking-widest">OR PASTE TEXT</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-2">
+                        <textarea id="jd-text-paste" rows="5" class="w-full bg-transparent p-3 text-sm text-slate-300 border-0 focus:ring-0 resize-none placeholder-slate-600 focus:outline-none" placeholder="Paste the Job Description text directly here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Right: Interview Configurations -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="glass-card glow-border rounded-3xl p-6 md:p-8 space-y-6">
+                        <h3 class="text-lg font-bold tracking-wide text-slate-200 border-b border-white/5 pb-4">INTERVIEW CONFIGURATION</h3>
+                        
+                        <!-- Interview Mode -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Interview Mode</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" onclick="setMode('Technical', this)" class="mode-btn py-2.5 px-3 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-200 text-xs font-semibold hover:border-purple-500 transition-all">
+                                    <i class="fa-solid fa-code mr-2"></i>Technical
+                                </button>
+                                <button type="button" onclick="setMode('HR', this)" class="mode-btn py-2.5 px-3 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-xs font-semibold hover:border-purple-500 transition-all">
+                                    <i class="fa-solid fa-user-tie mr-2"></i>HR Interview
+                                </button>
+                                <button type="button" onclick="setMode('Mixed', this)" class="mode-btn py-2.5 px-3 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-xs font-semibold hover:border-purple-500 transition-all">
+                                    <i class="fa-solid fa-shuffle mr-2"></i>Mixed
+                                </button>
+                                <button type="button" onclick="setMode('Rapid Fire', this)" class="mode-btn py-2.5 px-3 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-xs font-semibold hover:border-purple-500 transition-all">
+                                    <i class="fa-solid fa-fire mr-2"></i>Rapid Fire
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Difficulty Level -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Difficulty</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button type="button" onclick="setDifficulty('Basic', this)" class="diff-btn py-2 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-[11px] font-semibold hover:border-purple-500 transition-all truncate">
+                                    Basic
+                                </button>
+                                <button type="button" onclick="setDifficulty('Easy', this)" class="diff-btn py-2 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-[11px] font-semibold hover:border-purple-500 transition-all truncate">
+                                    Easy
+                                </button>
+                                <button type="button" onclick="setDifficulty('Medium', this)" class="diff-btn py-2 px-2 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-200 text-[11px] font-semibold hover:border-purple-500 transition-all truncate">
+                                    Medium
+                                </button>
+                                <button type="button" onclick="setDifficulty('Hard', this)" class="diff-btn py-2 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-400 text-[11px] font-semibold hover:border-purple-500 transition-all truncate">
+                                    Hard
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Session Mode Information Card -->
+                        <div class="space-y-2 bg-purple-500/5 border border-purple-500/10 rounded-2xl p-4 text-center">
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-400 block mb-1">Session Limit</span>
+                            <span class="text-sm font-semibold text-slate-200">Unlimited Practice Questions</span>
+                            <p class="text-[10px] text-slate-500 leading-normal mt-1">Practice as many questions as you want. End the session and see your cumulative evaluation whenever you choose.</p>
+                        </div>
+
+                        <!-- Start Button -->
+                        <button type="button" id="start-interview-btn" onclick="startInterview()" class="w-full py-4 rounded-xl font-bold tracking-wider btn-glow-purple text-white flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-solid fa-play"></i>
+                            <span>START PRACTICE SESSION</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- 2. ACTIVE INTERVIEW SCREEN -->
+        <section id="interview-section" class="hidden space-y-6 max-w-6xl mx-auto py-4">
+            <!-- Progress Bar Info -->
+            <div class="glass-card glow-border rounded-2xl p-4 flex flex-wrap gap-4 justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs font-bold tracking-wider bg-purple-500/10 border border-purple-500/30 text-purple-300 py-1 px-3 rounded-lg uppercase" id="current-question-tag">Question 1</span>
+                    <span class="text-xs text-slate-500" id="current-difficulty-tag">Difficulty: Medium</span>
+                </div>
+                
+                <!-- Progress Line -->
+                <div class="flex-1 max-w-xs mx-4 hidden md:block">
+                    <div class="w-full h-[2px] bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]"></div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-500 leading-none">ELAPSED TIME</p>
+                        <span class="text-sm font-semibold font-mono text-slate-300" id="session-timer">00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Split: Main Column and Sidebar Column -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left Column: Active Question & Input Controls -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- Question Card -->
+                    <div class="glass-card glow-border rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+                        <div class="absolute -right-16 -top-16 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
+                        
+                        <!-- Speaker voice control -->
+                        <div class="flex justify-between items-start">
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-purple-400">Interviewer Question</span>
+                            <button onclick="speakQuestion()" class="text-slate-400 hover:text-purple-400 hover:scale-115 p-2 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/30 transition-all" id="tts-btn" title="Read question aloud">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <!-- Actual Question Text -->
+                        <h2 class="text-xl md:text-2xl font-bold leading-relaxed text-white pr-4" id="question-text">
+                            Loading question...
+                        </h2>
+                    </div>
+
+                    <!-- Voice Input Controls & Transcript -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        <!-- Left: Speak action -->
+                        <div class="md:col-span-4 flex flex-col items-center justify-center glass-card glow-border rounded-3xl p-6 space-y-4">
+                            <p class="text-xs text-slate-400 text-center font-medium uppercase tracking-wider" id="speak-status">Press to answer</p>
+                            
+                            <!-- Pulsing Microphone button -->
+                            <button id="mic-btn" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border border-white/10 flex items-center justify-center text-white text-3xl shadow-lg hover:scale-105 transition-all relative z-10 cursor-pointer">
+                                <i class="fa-solid fa-microphone" id="mic-icon"></i>
+                            </button>
+
+                            <!-- Realtime waveform indicator -->
+                            <div class="waveform-container h-8 flex items-center justify-center opacity-60">
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Speech transcript editor -->
+                        <div class="md:col-span-8 glass-card glow-border rounded-3xl p-6 flex flex-col space-y-3">
+                            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                                <span class="text-xs uppercase font-bold tracking-wider text-slate-400">Transcript Editor</span>
+                                <span class="text-[10px] text-slate-500"><i class="fa-solid fa-pen mr-1"></i>You can edit the text manually</span>
+                            </div>
+                            <textarea id="transcript-input" class="flex-1 bg-transparent text-slate-200 text-sm focus:outline-none resize-none border-0 h-32 focus:ring-0 leading-relaxed placeholder-slate-700" placeholder="Your spoken answer will translate here in real time. Click the mic button to start, or type your answer directly here if you prefer."></textarea>
+                            
+                            <div class="flex justify-between items-center gap-3 pt-2">
+                                <div>
+                                    <button id="back-btn" onclick="goBackQuestion()" class="py-2.5 px-4 rounded-xl text-xs font-bold border border-white/10 bg-white/5 text-slate-400 hover:text-white transition hidden">
+                                        <i class="fa-solid fa-chevron-left mr-1"></i> Back
+                                    </button>
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="finishInterview()" class="py-2.5 px-4 rounded-xl text-xs font-bold border border-white/5 bg-white/5 text-slate-400 hover:text-white transition">
+                                        <i class="fa-solid fa-flag-checkered mr-1"></i> Finish Practice
+                                    </button>
+                                    <button id="submit-next-btn" onclick="submitAndNextQuestion()" class="py-2.5 px-6 rounded-xl text-xs font-bold tracking-wide btn-glow-purple text-white">
+                                        SUBMIT & NEXT <i class="fa-solid fa-chevron-right ml-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Sidebar Log Area -->
+                <div class="lg:col-span-4 glass-card glow-border rounded-3xl p-6 space-y-4">
+                    <div class="border-b border-white/5 pb-3 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-sm font-bold tracking-wide text-slate-200">PRACTICE LOG</h3>
+                            <p class="text-[10px] text-slate-500 mt-1">Evaluate answers dynamically, or compile them all at once at the end.</p>
+                        </div>
+                        <button id="eval-all-btn" onclick="evaluateAllPending()" class="hidden py-1.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold transition-all shadow-sm shadow-indigo-600/20">
+                            Evaluate All
+                        </button>
+                    </div>
+                    <div id="history-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-1 no-scrollbar">
+                        <p class="text-xs text-slate-500 italic text-center py-4">No questions answered yet. Submit your first answer to start logging progress.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- 3. LOADING EVALUATION SCREEN -->
+        <section id="loading-section" class="hidden py-16 text-center space-y-6 max-w-md mx-auto">
+            <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-purple-500/40 pulse-glow">
+                <i class="fa-solid fa-brain text-4xl text-purple-400"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold tracking-wide text-white" id="loading-status-title">Gemini Panel Evaluating</h3>
+                <p class="text-xs text-slate-400 animate-pulse" id="loading-status-desc">Analyzing communication clarity and grammar...</p>
+            </div>
+        </section>
+
+
+        <!-- 4. ANSWER EVALUATION DETAIL (Moved outside main to avoid stacking context issues) -->
+
+
+        <!-- 5. FINAL PERFORMANCE REPORT -->
+        <section id="report-section" class="hidden space-y-6 max-w-4xl mx-auto py-4">
+            <!-- Overall Back Button for Report Screen -->
+            <div class="flex justify-start mb-2">
+                <button onclick="goBackFromReport()" class="py-2 px-4 rounded-xl text-xs font-bold border border-white/10 bg-white/5 text-slate-400 hover:text-white transition flex items-center space-x-1.5 cursor-pointer">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Back to Practice</span>
+                </button>
+            </div>
+            <div class="text-center space-y-3">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                    <i class="fa-solid fa-medal text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold tracking-tight">Interview Performance Report</h2>
+                <p class="text-slate-400 text-xs uppercase tracking-widest">Session Completed Successfully</p>
+            </div>
+
+            <!-- Main grid feedback metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Left panel: Rating and Trend Chart -->
+                <div class="md:col-span-7 glass-card glow-border rounded-3xl p-6 md:p-8 space-y-6">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                        <h3 class="text-base font-bold tracking-wide text-slate-200">SCORE ANALYSIS</h3>
+                        <span class="text-xs bg-purple-500/10 border border-purple-500/30 text-purple-300 py-1 px-3 rounded-lg font-mono font-bold" id="report-rating-tag">Rating: 0.0 / 10</span>
+                    </div>
+
+                    <!-- SVG Trend chart -->
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase font-bold tracking-wider text-slate-500">Confidence Trend Across Questions</label>
+                        <div class="w-full h-44 bg-white/5 rounded-2xl relative p-4 flex items-end justify-between border border-white/5 overflow-hidden">
+                            <!-- SVG lines will render inside here dynamically -->
+                            <div class="absolute inset-0 z-0 opacity-10 flex flex-col justify-between p-4 pointer-events-none">
+                                <div class="border-b border-white w-full"></div>
+                                <div class="border-b border-white w-full"></div>
+                                <div class="border-b border-white w-full"></div>
+                                <div class="border-b border-white w-full"></div>
+                            </div>
+                            <svg id="trend-svg" class="absolute inset-0 w-full h-full p-4 z-10" preserveAspectRatio="none">
+                                <!-- Paths are inserted dynamically -->
+                            </svg>
+                            
+                            <!-- X Axis indicator labels are inserted dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Aggregate stats block -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Practice Score</span>
+                            <h4 class="text-2xl font-extrabold text-white mt-1" id="report-avg-score">0%</h4>
+                        </div>
+                        <div class="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Time Expended</span>
+                            <h4 class="text-2xl font-extrabold text-white mt-1" id="report-total-time">00:00</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right panel: Quick highlights -->
+                <div class="md:col-span-5 space-y-6">
+                    <!-- Strong Areas -->
+                    <div class="glass-card glow-border rounded-3xl p-6 space-y-3">
+                        <h4 class="text-xs uppercase font-bold tracking-widest text-emerald-400 border-b border-white/5 pb-2"><i class="fa-solid fa-circle-check mr-2"></i>Strong Subjects</h4>
+                        <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-300 marker:text-emerald-500" id="report-strong-list">
+                            <li>Elaborated on OOP concepts.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Weak Areas -->
+                    <div class="glass-card glow-border rounded-3xl p-6 space-y-3">
+                        <h4 class="text-xs uppercase font-bold tracking-widest text-pink-400 border-b border-white/5 pb-2"><i class="fa-solid fa-circle-xmark mr-2"></i>Weak Elements</h4>
+                        <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-300 marker:text-pink-500" id="report-weak-list">
+                            <li>Details regarding REST conventions.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deep Improvement Plan -->
+            <div class="glass-card glow-border rounded-3xl p-6 md:p-8 space-y-4">
+                <h3 class="text-base font-bold tracking-wide text-slate-200 border-b border-white/5 pb-3">Study & Preparation Recommendations</h3>
+                <p id="report-improvement-plan" class="text-sm text-slate-300 leading-relaxed">
+                    Personalized study recommendations loading...
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div>
+                        <span class="text-xs uppercase font-bold tracking-widest text-purple-400 block mb-2">Most Asked Topics</span>
+                        <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5 marker:text-purple-400" id="report-topics-list">
+                            <li>List here</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase font-bold tracking-widest text-pink-400 block mb-2">Recommended Study Questions</span>
+                        <ol class="list-decimal list-inside text-xs text-slate-300 space-y-1.5 marker:text-pink-500" id="report-questions-list">
+                            <li>Question 1</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer buttons -->
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
+                <button onclick="downloadReportPdf()" class="w-full sm:w-auto py-3.5 px-8 rounded-xl font-bold tracking-wider btn-glow-purple text-white flex items-center justify-center space-x-2 text-sm cursor-pointer">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>DOWNLOAD PDF REPORT</span>
+                </button>
+                <button onclick="resetToDashboard()" class="w-full sm:w-auto py-3.5 px-8 rounded-xl font-bold tracking-wider btn-outline-glow text-slate-300 flex items-center justify-center space-x-2 text-sm cursor-pointer">
+                    <i class="fa-solid fa-house"></i>
+                    <span>PRACTICE ANOTHER JD</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 4. ANSWER EVALUATION DETAIL (As Modal popup overlay) -->
+    <div id="evaluation-section" class="fixed inset-0 bg-spaceDark/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card glow-border rounded-3xl w-full max-w-4xl p-6 md:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto no-scrollbar animate__animated animate__zoomIn">
+            
+            <div class="absolute -right-20 -top-20 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <!-- Modal Top Navigation / Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+                <div class="flex items-center space-x-3">
+                    <button onclick="closeEvaluation()" class="py-2 px-4 rounded-xl text-xs font-bold border border-white/10 bg-white/5 text-slate-400 hover:text-white transition flex items-center space-x-1.5 cursor-pointer">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Back to Practice</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+                    <h3 class="text-xs uppercase font-bold tracking-widest text-pink-400">EVALUATION FEEDBACK</h3>
+                    <button onclick="closeEvaluation()" class="text-slate-500 hover:text-white p-2.5 hover:bg-white/5 rounded-xl border border-white/10 transition flex items-center justify-center cursor-pointer" title="Close">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Banner (hidden by default) -->
+            <div id="eval-error-banner" class="hidden bg-pink-500/10 border border-pink-500/30 rounded-2xl p-4 text-xs text-pink-400 space-y-1.5 animate__animated animate__shakeX">
+                <div class="flex items-center space-x-2 font-bold uppercase tracking-wider text-pink-300">
+                    <i class="fa-solid fa-circle-exclamation text-sm"></i>
+                    <span>Gemini API Notice</span>
+                </div>
+                <p id="eval-error-message" class="leading-relaxed">Details here...</p>
+            </div>
+            
+            <!-- Circular score metrics grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 justify-items-center border-b border-white/5 pb-6">
+                <!-- 1. Overall Score -->
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="circle-progress-container" id="ring-score">
+                        <svg class="circle-progress-svg" width="90" height="90">
+                            <circle class="circle-bg" cx="45" cy="45" r="38"></circle>
+                            <circle class="circle-val stroke-indigo-500" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-bold text-lg text-slate-100 font-mono" id="val-score">0.0</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Overall Score</p>
+                </div>
+
+                <!-- 2. Technical Accuracy -->
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="circle-progress-container" id="ring-technical">
+                        <svg class="circle-progress-svg" width="90" height="90">
+                            <circle class="circle-bg" cx="45" cy="45" r="38"></circle>
+                            <circle class="circle-val stroke-purple-500" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-bold text-lg text-slate-100 font-mono" id="val-technical">0.0</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">Tech Accuracy</p>
+                </div>
+
+                <!-- 3. Communication -->
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="circle-progress-container" id="ring-communication">
+                        <svg class="circle-progress-svg" width="90" height="90">
+                            <circle class="circle-bg" cx="45" cy="45" r="38"></circle>
+                            <circle class="circle-val stroke-pink-500" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-bold text-lg text-slate-100 font-mono" id="val-communication">0.0</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">Communication</p>
+                </div>
+
+                <!-- 4. Confidence -->
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="circle-progress-container" id="ring-confidence">
+                        <svg class="circle-progress-svg" width="90" height="90">
+                            <circle class="circle-bg" cx="45" cy="45" r="38"></circle>
+                            <circle class="circle-val stroke-emerald-500" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-bold text-lg text-slate-100 font-mono" id="val-confidence">0.0</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Confidence</p>
+                </div>
+
+                <!-- 5. Grammar -->
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="circle-progress-container" id="ring-grammar">
+                        <svg class="circle-progress-svg" width="90" height="90">
+                            <circle class="circle-bg" cx="45" cy="45" r="38"></circle>
+                            <circle class="circle-val stroke-amber-500" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center font-bold text-lg text-slate-100 font-mono" id="val-grammar">0.0</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Grammar</p>
+                </div>
+            </div>
+
+            <!-- Q&A Context summary -->
+            <div class="space-y-2 text-sm leading-relaxed">
+                <p class="text-slate-400"><strong class="text-slate-200">Question:</strong> <span id="eval-question-text">Question text</span></p>
+                <p class="text-slate-400"><strong class="text-slate-200">Your Answer:</strong> <span id="eval-answer-text">Answer text</span></p>
+            </div>
+
+
+            <!-- Deep Analysis Sections: Accordions -->
+            <div class="space-y-4">
+                
+                <!-- Missing Points -->
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <button class="w-full p-5 text-left font-bold flex justify-between items-center text-slate-200 hover:bg-white/5 transition-all" onclick="toggleAccordion('acc-missing')">
+                        <span class="flex items-center"><i class="fa-solid fa-triangle-exclamation text-amber-500 mr-3"></i>Missing Points</span>
+                        <i class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-300" id="icon-acc-missing"></i>
+                    </button>
+                    <div id="acc-missing" class="hidden p-6 border-t border-white/5 bg-slate-900/10 space-y-2">
+                        <ul class="list-disc list-inside space-y-2 text-sm text-slate-300 marker:text-purple-400" id="eval-missing-list">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Ideal Answer -->
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <button class="w-full p-5 text-left font-bold flex justify-between items-center text-slate-200 hover:bg-white/5 transition-all" onclick="toggleAccordion('acc-ideal')">
+                        <span class="flex items-center"><i class="fa-solid fa-star text-indigo-400 mr-3"></i>Ideal Answer Pattern</span>
+                        <i class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-300" id="icon-acc-ideal"></i>
+                    </button>
+                    <div id="acc-ideal" class="hidden p-6 border-t border-white/5 bg-slate-900/10 text-sm text-slate-300 leading-relaxed" id="eval-ideal-answer">
+                        Ideal answer loading...
+                    </div>
+                </div>
+
+                <!-- Improvement Tips -->
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <button class="w-full p-5 text-left font-bold flex justify-between items-center text-slate-200 hover:bg-white/5 transition-all" onclick="toggleAccordion('acc-tips')">
+                        <span class="flex items-center"><i class="fa-solid fa-lightbulb text-pink-400 mr-3"></i>Interviewer Actionable Tips</span>
+                        <i class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-300" id="icon-acc-tips"></i>
+                    </button>
+                    <div id="acc-tips" class="hidden p-6 border-t border-white/5 bg-slate-900/10 space-y-2">
+                        <ul class="list-disc list-inside space-y-2 text-sm text-slate-300 marker:text-pink-400" id="eval-tips-list">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer control -->
+            <div class="flex justify-end pt-4 border-t border-white/5">
+                <button onclick="closeEvaluation()" class="py-3 px-8 rounded-xl font-bold btn-glow-purple text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Back to Practice</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW TO USE GUIDE MODAL -->
+    <div id="how-to-use-modal" class="fixed inset-0 bg-spaceDark/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="glass-card glow-border rounded-3xl w-full max-w-lg p-6 md:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto no-scrollbar animate__animated animate__fadeInUp">
+            <button onclick="closeHowToUse()" class="absolute right-4 top-4 text-slate-500 hover:text-white p-2 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="space-y-2 border-b border-white/5 pb-4">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                    <i class="fa-solid fa-circle-question text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">How to Use IntPrep</h3>
+                <p class="text-xs text-slate-400">A quick, step-by-step guide to get you practicing like a pro.</p>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <!-- Step 1 -->
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-mono font-bold text-xs">
+                        1
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-slate-200 text-sm">Set up your API Key (First Step)</h4>
+                        <p class="text-xs text-slate-400 leading-normal">
+                            Click the <strong>Gear icon ⚙️</strong> in the header and paste your personal Gemini API Key. Get one for free at <a href="https://aistudio.google.com/" target="_blank" class="text-purple-400 hover:underline">Google AI Studio <i class="fa-solid fa-up-right-from-square text-[9px]"></i></a>. Your key is saved locally in your browser for unlimited usage.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-mono font-bold text-xs">
+                        2
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-slate-200 text-sm">Upload Job Description</h4>
+                        <p class="text-xs text-slate-400 leading-normal">
+                            Upload a JD file (PDF/DOCX) or paste the requirements text directly into the landing configurator.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-mono font-bold text-xs">
+                        3
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-slate-200 text-sm">Configure and Speak</h4>
+                        <p class="text-xs text-slate-400 leading-normal">
+                            Choose your mode (Technical, HR, etc.) and difficulty. Click <strong>Start Practice</strong>. Speak your answers using the microphone button or type them directly in the text editor. Use the <strong>Back</strong> button to navigate and edit previous questions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-mono font-bold text-xs">
+                        4
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-slate-200 text-sm">Batch Evaluation</h4>
+                        <p class="text-xs text-slate-400 leading-normal">
+                            Submit and proceed directly to the next question. When done, click <strong>Finish Practice</strong>. All answers will evaluate at once in parallel, opening your detailed report and PDF download.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5 flex">
+                <button onclick="closeHowToUse()" class="flex-1 py-3 rounded-xl text-xs font-bold btn-glow-purple text-white">
+                    GOT IT, LET'S PRACTICE!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-spaceDark/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="glass-card glow-border rounded-3xl w-full max-w-md p-6 space-y-6 relative animate__animated animate__fadeInUp">
+            <button onclick="closeKeySettings()" class="absolute right-4 top-4 text-slate-500 hover:text-white p-2 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="space-y-2">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                    <i class="fa-solid fa-key text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Gemini API Configuration</h3>
+                <p class="text-xs text-slate-500">Provide your personal Gemini API Key if the backend is not pre-configured.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-400">GEMINI API KEY</label>
+                    <input type="password" id="settings-api-key" class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="Paste your API key here (AIzaSy...)">
+                </div>
+                
+                <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-3 text-[11px] text-purple-300 leading-relaxed">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Your key is saved locally in your browser (localStorage) and sent directly to your Python backend to authenticate requests.
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button onclick="saveKeySettings()" class="flex-1 py-3 rounded-xl text-xs font-bold btn-glow-purple text-white">
+                        SAVE CONFIGURATION
+                    </button>
+                    <button onclick="clearKeySettings()" class="py-3 px-4 rounded-xl text-xs font-bold border border-white/5 bg-white/5 text-pink-400 hover:bg-white/10 transition">
+                        CLEAR KEY
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background decorative grids -->
+    <div class="absolute inset-0 z-0 bg-[radial-gradient(#1e1b4b_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
+
+    <!-- Script File -->
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
