@@ -22,11 +22,13 @@ app = Flask(
 )
 CORS(app)
 
-# Configurations
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../uploads')
+# Configurations - Use /tmp on Vercel (serverless), local uploads folder elsewhere
+IS_VERCEL = os.getenv("VERCEL", False)
+UPLOAD_FOLDER = '/tmp' if IS_VERCEL else os.path.join(os.path.dirname(os.path.abspath(__file__)), '../uploads')
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
+
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
