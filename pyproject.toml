@@ -1,6 +1,0 @@
-[project]
-name = "intprep"
-version = "1.0.0"
-
-[tool.vercel]
-entrypoint = "backend/app.py"
